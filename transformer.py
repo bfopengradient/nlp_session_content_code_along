@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from gensim.models import Word2Vec, Doc2Vec
+from gensim.models import Word2Vec 
 
 
 class GensimWord2VecVectorizer(BaseEstimator, TransformerMixin):
@@ -10,6 +10,8 @@ class GensimWord2VecVectorizer(BaseEstimator, TransformerMixin):
     hence we roll out our own.
     All the parameters are gensim.models.Word2Vec's parameters.
     https://radimrehurek.com/gensim/models/word2vec.html#gensim.models.word2vec.Word2Vec
+    
+    The fit and transform functions are designed for use in skelearn pipelines along with downstream classifiers.
     """
 
     def __init__(self, size=10, alpha=0.025, window=5, min_count=5, max_vocab_size=None,
@@ -38,7 +40,7 @@ class GensimWord2VecVectorizer(BaseEstimator, TransformerMixin):
         self.batch_words = batch_words
         self.compute_loss = compute_loss
         self.callbacks = callbacks
-         
+    #Define fit function for use on training data     
     def fit(self, X, y=None):
         self.model_ = Word2Vec(
             sentences=X,
@@ -50,7 +52,7 @@ class GensimWord2VecVectorizer(BaseEstimator, TransformerMixin):
             trim_rule=self.trim_rule, sorted_vocab=self.sorted_vocab, batch_words=self.batch_words,
             compute_loss=self.compute_loss, callbacks=self.callbacks)
         return self
-
+    #Combined with the get_embedding function the transform function is used to transform tokens into embeddings.
     def transform(self, X):
         X_embeddings = np.array([self._get_embedding(words) for words in X])
         return X_embeddings
